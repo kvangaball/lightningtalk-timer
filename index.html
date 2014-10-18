@@ -1,0 +1,194 @@
+<html>
+<head>
+
+	<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+
+	<style type="text/css">
+
+		.inputz span {
+			text-align: center;
+		}
+		.inputz #milisekunder {
+			font-size: 0.5em;
+		}
+
+		.inputz {
+			width: 7em;
+			font-size: 1em;
+		}
+
+		.player .controls {
+			display: inline-block;
+			vertical-align: middle;
+			height: 100%;
+			margin-top: 3em;
+		}
+
+		.round{
+			border: solid 6px;
+  			border-radius: 100%;
+		}
+		.player{
+		    width: 10em;
+		    height: 10em;
+		    background-color: grey;
+
+		    position: absolute;
+		    top:0;
+		    bottom: 0;
+		    left: 0;
+		    right: 0;
+
+    		margin: auto;
+    		text-align: center;
+}
+
+		}
+	</style>
+</head>	
+
+<body>
+	<main>
+		<div class="player round">
+			<div class="controls">
+
+				<div class="inputz">
+					<span contenteditable="true" type="number" placeholder="Antall minutter" id="timer">0</span>
+					:
+					<span contenteditable="true" type="number" placeholder="Antall minutter" id="minutter">10</span>
+					:
+					<span contenteditable="true" type="number" placeholder="Antall sekunder" id="sekunder">000</span>		
+					<span type="number" placeholder="Antall sekunder" id="milisekunder">000</span>		
+				</div>
+				<br>
+
+				<span onclick="start()" class="glyphicon glyphicon-play"></span>
+				<span onclick="pause()" class="glyphicon glyphicon-pause"></span>
+				<span onclick="reset()" class="glyphicon glyphicon-refresh"></span>
+				<span onclick="settings()" class="glyphicon glyphicon-cog"></span>
+			</div>
+
+		</div>
+		<h1 style="position: fixed; bottom: 5%; left: 5%; margin: auto " id="tidigjen"></h1>
+	</main>
+
+</body>	
+
+<script type="text/javascript">
+
+	reset();
+	var startet, antallSekunder, klokka, farge;
+	
+
+	function reset(){
+		clearTimeout(klokka);
+		settBakgrunn("green");
+		set(0, 10, 0, 0);
+	}
+
+	function start(){
+		var timer = document.getElementById('timer').innerHTML;	
+		var sekunder = document.getElementById('sekunder').innerHTML;	
+		var minutter = document.getElementById('minutter').innerHTML;	
+
+		antallSekunder = sekunder ? parseInt(sekunder) : 0
+		antallSekunder += minutter ? (parseInt(minutter) * 60): 0;
+		antallSekunder += timer ? (parseInt(timer) * 60 * 60) : 0;
+
+		console.log(antallSekunder)
+		
+		startet = new Date();
+
+		tickTock()
+	}
+
+	function pause(){
+		clearTimeout(klokka);
+	}
+
+	function set(timer, minutter, sekunder, milisekunder){
+
+		document.getElementById('timer').innerHTML = timer;	
+		document.getElementById('minutter').innerHTML  = minutter < 10 ? "0" + minutter : minutter;	
+		document.getElementById('sekunder').innerHTML  = sekunder < 10 ? "0" + sekunder : sekunder;	
+		var msPad = "";
+		if(typeof milisekunder === 'undefined'){
+			msPad = "000";
+		}
+		else {
+			if(milisekunder < 100){
+				msPad += "0"
+			}
+			if(milisekunder < 10){
+				msPad += "0"
+			}
+			if(milisekunder === 0){
+				msPad += "0";
+			} 
+
+			if(milisekunder < 0){
+				msPad += "0";
+			}
+			else {
+				msPad += milisekunder;
+			}
+
+
+		}
+
+
+		document.getElementById('milisekunder').innerHTML  =  msPad;	
+	}
+
+	function skiftBakgrunn(millisekunderIgjen){
+		console.log(antallSekunder, millisekunderIgjen);
+
+		var treshHold = (antallSekunder / 2) * 1000;
+		if(millisekunderIgjen < treshHold && document.body.style.background !== 'yellow'){
+			settBakgrunn("yellow");
+		}
+	}
+
+	function settBakgrunn(nyFarge){
+		farge = nyFarge;
+		document.body.style.background = farge;
+	}
+
+
+	function tickTock(){
+
+		var milisekunderGaat = new Date().getTime() - startet.getTime();
+		var millisekunderIgjen = (antallSekunder * 1000) - milisekunderGaat;
+
+		skiftBakgrunn(millisekunderIgjen);
+		
+		var tidigjen = msToTime(millisekunderIgjen);		
+		set(tidigjen.timer, tidigjen.minutter, tidigjen.sekunder, tidigjen.ms);
+
+		if(milisekunderGaat / 1000 < antallSekunder){
+			klokka = window.setTimeout(tickTock, 50);
+		}
+	}
+
+	function msToTime(s) {
+
+		function addZ(n) {
+	    	return (n<10? '0':'') + n;
+	  	}
+
+		var ms = s % 1000;
+		s = (s - ms) / 1000;
+		var secs = s % 60;
+		s = (s - secs) / 60;
+		var mins = s % 60;
+		var hrs = (s - mins) / 60;
+
+		return { timer: hrs , minutter: mins, sekunder: secs, ms : ms};
+	}	
+	
+
+</script>
+
+
+</html>
