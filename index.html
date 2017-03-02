@@ -5,7 +5,6 @@
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
 
 	<style type="text/css">
-
 		.inputz span {
 			text-align: center;
 		}
@@ -14,26 +13,29 @@
 		}
 
 		.inputz {
-			width: 7em;
-			font-size: 1em;
+			width: 100%;
+			font-size: 8em;
+			height: 50%;
 		}
 
-		.player .controls {
+		#player .controls {
 			display: inline-block;
 			vertical-align: middle;
 			height: 100%;
-			margin-top: 3em;
+			margin-top: 30%;
 		}
 
 		.round{
 			border: solid 6px;
   			border-radius: 100%;
 		}
-		.player{
-		    width: 10em;
-		    height: 10em;
+		#player{
+		    width: 10rem;
+		    height: 10rem;
 		    background-color: grey;
-
+			margin-bottom: 20%;
+		}
+		.centered{
 		    position: absolute;
 		    top:0;
 		    bottom: 0;
@@ -42,31 +44,29 @@
 
     		margin: auto;
     		text-align: center;
-}
-
+		}
+		#milisekunder{
+			display: none;
 		}
 	</style>
 </head>	
 
 <body>
 	<main>
-		<div class="player round">
+		<div class="inputz centered">
+			<span contenteditable="true" type="number" placeholder="Antall minutter" id="timer">0</span>
+			:
+			<span contenteditable="true" type="number" placeholder="Antall minutter" id="minutter">10</span>
+			:
+			<span contenteditable="true" type="number" placeholder="Antall sekunder" id="sekunder">000</span>
+			<br/>
+			<span type="number" placeholder="Antall sekunder" id="milisekunder">000</span>
+		</div>
+		<div id="player" class="centered round">
 			<div class="controls">
-
-				<div class="inputz">
-					<span contenteditable="true" type="number" placeholder="Antall minutter" id="timer">0</span>
-					:
-					<span contenteditable="true" type="number" placeholder="Antall minutter" id="minutter">10</span>
-					:
-					<span contenteditable="true" type="number" placeholder="Antall sekunder" id="sekunder">000</span>		
-					<span type="number" placeholder="Antall sekunder" id="milisekunder">000</span>		
-				</div>
-				<br>
-
 				<span onclick="start()" class="glyphicon glyphicon-play"></span>
 				<span onclick="pause()" class="glyphicon glyphicon-pause"></span>
 				<span onclick="reset()" class="glyphicon glyphicon-refresh"></span>
-				<span onclick="settings()" class="glyphicon glyphicon-cog"></span>
 			</div>
 
 		</div>
