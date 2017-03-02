@@ -2,7 +2,7 @@
 <head>
 
 	<!-- Latest compiled and minified CSS -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+<link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
 
 	<style type="text/css">
 		.inputz span {
@@ -14,8 +14,9 @@
 
 		.inputz {
 			width: 100%;
-			font-size: 8em;
+			font-size: 10em;
 			height: 50%;
+			margin-top: 30%;
 		}
 
 		#player .controls {
@@ -30,10 +31,10 @@
   			border-radius: 100%;
 		}
 		#player{
-		    width: 10rem;
-		    height: 10rem;
-		    background-color: grey;
+		    width: 50%;
+		    height: 30%;
 			margin-bottom: 20%;
+			font-size: 4em;
 		}
 		.centered{
 		    position: absolute;
@@ -62,7 +63,7 @@
 			<br/>
 			<span type="number" placeholder="Antall sekunder" id="milisekunder">000</span>
 		</div>
-		<div id="player" class="centered round">
+		<div id="player" class="centered">
 			<div class="controls">
 				<span onclick="start()" class="glyphicon glyphicon-play"></span>
 				<span onclick="pause()" class="glyphicon glyphicon-pause"></span>
