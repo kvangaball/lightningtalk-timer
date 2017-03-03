@@ -46,7 +46,7 @@
     		margin: auto;
     		text-align: center;
 		}
-		#milisekunder{
+		.hidden{
 			display: none;
 		}
 	</style>
@@ -61,13 +61,13 @@
 			:
 			<span contenteditable="true" type="number" placeholder="Antall sekunder" id="sekunder">000</span>
 			<br/>
-			<span type="number" placeholder="Antall sekunder" id="milisekunder">000</span>
+			<span type="number" class="hidden" placeholder="Antall sekunder" id="milisekunder">000</span>
 		</div>
 		<div id="player" class="centered">
 			<div class="controls">
-				<span onclick="start()" class="glyphicon glyphicon-play"></span>
-				<span onclick="pause()" class="glyphicon glyphicon-pause"></span>
-				<span onclick="reset()" class="glyphicon glyphicon-refresh"></span>
+				<span id="start" onclick="start()" class="glyphicon glyphicon-play"></span>
+				<span id="pause" onclick="pause()" class="glyphicon glyphicon-pause hidden"></span>
+				<span id="reset" onclick="reset()" class="glyphicon glyphicon-refresh"></span>
 			</div>
 
 		</div>
@@ -83,36 +83,56 @@
 	
 
 	function reset(){
+	    pause();
+
 		clearTimeout(klokka);
 		settBakgrunn("green");
-		set(0, 10, 0, 0);
-	}
-
-	function start(){
-		var timer = document.getElementById('timer').innerHTML;	
-		var sekunder = document.getElementById('sekunder').innerHTML;	
-		var minutter = document.getElementById('minutter').innerHTML;	
-
-		antallSekunder = sekunder ? parseInt(sekunder) : 0
-		antallSekunder += minutter ? (parseInt(minutter) * 60): 0;
-		antallSekunder += timer ? (parseInt(timer) * 60 * 60) : 0;
-
-		console.log(antallSekunder)
-		
-		startet = new Date();
-
-		tickTock()
+		init();
 	}
 
 	function pause(){
+        toggleSynlig('start');
+        toggleSynlig('pause');
+
 		clearTimeout(klokka);
 	}
 
-	function set(timer, minutter, sekunder, milisekunder){
+	function start(){
+		antallSekunder = get();
+		console.log(antallSekunder);
+        if(antallSekunder === 0) {
+            init();
 
-		document.getElementById('timer').innerHTML = timer;	
+            antallSekunder = get();
+	    }
+		
+		startet = new Date();
+
+        toggleSynlig('start');
+        toggleSynlig('pause');
+
+		tickTock();
+	}
+
+	function get(){
+	    const timer = document.getElementById('timer').innerHTML;
+		const sekunder = document.getElementById('sekunder').innerHTML;
+		const minutter = document.getElementById('minutter').innerHTML;
+
+        let res = 0;
+
+		res = sekunder ? parseInt(sekunder) : 0
+		res += minutter ? (parseInt(minutter) * 60): 0;
+		res += timer ? (parseInt(timer) * 60 * 60) : 0;
+
+		return res;
+	}
+
+	function set(timer, minutter, sekunder, milisekunder){
+		document.getElementById('timer').innerHTML = timer || 0;
 		document.getElementById('minutter').innerHTML  = minutter < 10 ? "0" + minutter : minutter;	
-		document.getElementById('sekunder').innerHTML  = sekunder < 10 ? "0" + sekunder : sekunder;	
+		document.getElementById('sekunder').innerHTML  = sekunder < 10 ? "0" + sekunder : sekunder;
+
 		var msPad = "";
 		if(typeof milisekunder === 'undefined'){
 			msPad = "000";
@@ -134,46 +154,62 @@
 			else {
 				msPad += milisekunder;
 			}
-
-
 		}
-
 
 		document.getElementById('milisekunder').innerHTML  =  msPad;	
 	}
 
 	function skiftBakgrunn(millisekunderIgjen){
-		console.log(antallSekunder, millisekunderIgjen);
+		//console.log(antallSekunder, millisekunderIgjen);
+		//console.log(document.body.style.background);
 
-		var treshHold = (antallSekunder / 2) * 1000;
-		if(millisekunderIgjen < treshHold && document.body.style.background !== 'yellow'){
+		var treshHold = (antallSekunder / 10) * 1000;
+		if(millisekunderIgjen < 10) {
+			settBakgrunn("red");
+		} else if(millisekunderIgjen >= 10 && millisekunderIgjen < treshHold){
 			settBakgrunn("yellow");
+		} else {
+			settBakgrunn("green");
 		}
 	}
 
+	function toggleSynlig(id){
+        const el = document.getElementById(id);
+
+        if(el.className.includes('hidden')) {
+            el.className = el.className.replace('hidden', '');
+        } else {
+            el.className = el.className + ' hidden';
+        }
+	}
+
 	function settBakgrunn(nyFarge){
+	    if(nyFarge === 'green') nyFarge = '#66ffce';
+	    if(nyFarge === 'red') nyFarge = '#ff6666';
+	    if(nyFarge === 'yellow') nyFarge = '#f4ff66';
+
 		farge = nyFarge;
 		document.body.style.background = farge;
 	}
 
-
 	function tickTock(){
-
 		var milisekunderGaat = new Date().getTime() - startet.getTime();
 		var millisekunderIgjen = (antallSekunder * 1000) - milisekunderGaat;
-
-		skiftBakgrunn(millisekunderIgjen);
 		
 		var tidigjen = msToTime(millisekunderIgjen);		
 		set(tidigjen.timer, tidigjen.minutter, tidigjen.sekunder, tidigjen.ms);
 
 		if(milisekunderGaat / 1000 < antallSekunder){
+			skiftBakgrunn(millisekunderIgjen);
 			klokka = window.setTimeout(tickTock, 50);
+		} else {
+		    settBakgrunn("red");
+			toggleSynlig('start');
+			toggleSynlig('pause');
 		}
 	}
 
 	function msToTime(s) {
-
 		function addZ(n) {
 	    	return (n<10? '0':'') + n;
 	  	}
@@ -186,8 +222,27 @@
 		var hrs = (s - mins) / 60;
 
 		return { timer: hrs , minutter: mins, sekunder: secs, ms : ms};
-	}	
-	
+	}
+
+	function getParameterByName(name) {
+	  	url = window.location.href;
+		name = name.replace(/[\[\]]/g, "\\$&");
+		var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+			results = regex.exec(url);
+		if (!results) return null;
+		if (!results[2]) return '';
+		return decodeURIComponent(results[2].replace(/\+/g, " "));
+	}
+
+	function init(){
+	    const timer = getParameterByName('timer') || '0';
+	    const minutter = getParameterByName('minutter') || '10';
+	    const sekunder = getParameterByName('sekunder') || '0';
+
+		set(timer, minutter, sekunder);
+	}
+
+	init();
 
 </script>
 
