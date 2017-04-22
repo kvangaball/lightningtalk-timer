@@ -78,9 +78,7 @@
 
 <script type="text/javascript">
 
-	reset();
 	var startet, antallSekunder, klokka, farge;
-	
 
 	function reset(){
 	    pause();
@@ -91,7 +89,8 @@
 	}
 
 	function pause(){
-        toggleSynlig('start');
+	console.trace("pause");
+        //toggleSynlig('start');
         toggleSynlig('pause');
 
 		clearTimeout(klokka);
@@ -160,9 +159,6 @@
 	}
 
 	function skiftBakgrunn(millisekunderIgjen){
-		//console.log(antallSekunder, millisekunderIgjen);
-		//console.log(document.body.style.background);
-
 		var treshHold = (antallSekunder / 10) * 1000;
 		if(millisekunderIgjen < 10) {
 			settBakgrunn("red");
@@ -203,10 +199,17 @@
 			skiftBakgrunn(millisekunderIgjen);
 			klokka = window.setTimeout(tickTock, 50);
 		} else {
+
+			play('ding.mp3');
+
 		    settBakgrunn("red");
 			toggleSynlig('start');
 			toggleSynlig('pause');
 		}
+	}
+
+	function play(file){
+		new Audio(file).play();
 	}
 
 	function msToTime(s) {
@@ -240,6 +243,7 @@
 	    const sekunder = getParameterByName('sekunder') || '0';
 
 		set(timer, minutter, sekunder);
+		settBakgrunn("green");
 	}
 
 	init();
